@@ -1,0 +1,16 @@
+{
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "tsconfig.json": "tsconfig.*.json, *.d.ts",
+    "package.json": "Dockerfile*, *.example, *.example.yml, package-lock.json, pnpm*, .yarnrc*, yarn*, .eslint*, eslint*, .oxlint*, oxlint*, .prettier*, prettier*, .editorconfig",
+    "README.md": "LICENSE"
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "always"
+  },
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "prettier.configPath": ".prettierrc",
+  "js/ts.tsdk.path": "node_modules/typescript/lib"
+}
