@@ -1,4 +1,4 @@
-import { VersioningType } from '@nestjs/common';
+import { INestApplication, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { useContainer } from 'class-validator';
@@ -13,13 +13,9 @@ import { CorsFactory } from '../cors/cors-factory';
 import { SwaggerFactory } from '../swagger/swagger-factory';
 
 /**
- * Creates and configures the Nest application instance.
+ * Configures the Nest application instance with global middleware, prefix, and settings.
  */
-export async function AppFactory() {
-  const app = await NestFactory.create(AppModule, {
-    bufferLogs: true,
-  });
-
+export function configureApp(app: INestApplication) {
   app.useLogger(app.get(Logger));
 
   const configService = app.get(ConfigService);
@@ -78,6 +74,17 @@ export async function AppFactory() {
    * Exposes interactive API docs in non-production environments.
    */
   SwaggerFactory(app, configService);
+}
+
+/**
+ * Creates and configures the Nest application instance.
+ */
+export async function AppFactory() {
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
+  });
+
+  configureApp(app);
 
   return app;
 }

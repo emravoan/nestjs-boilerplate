@@ -1,14 +1,44 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  OnModuleDestroy,
+  OnModuleInit,
+} from '@nestjs/common';
 
 import { UploadMessages } from '../../common/constants/messages';
 import { StorageService } from '../../common/services/storage.service';
 import { UploadChunkBufferDto } from './dto/upload-chunk-buffer.dto';
 
 @Injectable()
-export class UploadsService {
+export class UploadsService implements OnModuleInit, OnModuleDestroy {
   private readonly uploadChunks = new Map<string, Buffer[]>();
+  private readonly uploadLastActivity = new Map<string, number>();
+  private cleanupInterval: NodeJS.Timeout | null = null;
+  private readonly SESSION_TIMEOUT_MS = 60 * 60 * 1000; // 1 hour
 
   constructor(private readonly storageService: StorageService) {}
+
+  onModuleInit() {
+    this.cleanupInterval = setInterval(
+      () => {
+        const now = Date.now();
+        for (const [uploadId, lastActivity] of this.uploadLastActivity.entries()) {
+          if (now - lastActivity > this.SESSION_TIMEOUT_MS) {
+            this.uploadChunks.delete(uploadId);
+            this.uploadLastActivity.delete(uploadId);
+          }
+        }
+      },
+      10 * 60 * 1000,
+    ); // Check every 10 minutes
+  }
+
+  onModuleDestroy() {
+    if (this.cleanupInterval) {
+      clearInterval(this.cleanupInterval);
+    }
+  }
 
   /**
    * Uploads a file buffer by MIME root type (file/image/video).
@@ -47,6 +77,7 @@ export class UploadsService {
 
     const chunks = this.uploadChunks.get(uploadId) as Buffer[];
     chunks[chunkIndex] = chunkBuffer;
+    this.uploadLastActivity.set(uploadId, Date.now());
 
     /**
      * Finalizes and uploads once every expected chunk index is filled.
@@ -57,6 +88,7 @@ export class UploadsService {
       try {
         const key = await this.storageService.uploadBufferByType(fullBuffer);
         this.uploadChunks.delete(uploadId);
+        this.uploadLastActivity.delete(uploadId);
         return { done: true, filename: key };
       } catch {
         throw new InternalServerErrorException(UploadMessages.UPLOAD_FAILED);

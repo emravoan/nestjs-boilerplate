@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiSecurity, ApiTags } from '@nestjs/swagger';
 
+import { Guest } from '../../common/decorators/guest.decorator';
 import { ResponseMessage } from '../../common/decorators/response-message.decorator';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { AuthService } from './auth.service';
@@ -18,6 +19,7 @@ export class AuthController {
   /**
    * Registers a new user and returns auth tokens.
    */
+  @Guest()
   @ResponseMessage('Registered successfully')
   @Post('register')
   register(@Body() payload: CreateUserDto) {
@@ -27,6 +29,7 @@ export class AuthController {
   /**
    * Authenticates user credentials and returns auth tokens.
    */
+  @Guest()
   @ResponseMessage('Logged in successfully')
   @Post('login')
   @ApiBody({ type: LoginDto })
@@ -38,6 +41,7 @@ export class AuthController {
   /**
    * Exchanges a refresh token for a new token pair.
    */
+  @Guest()
   @ResponseMessage('Token refreshed successfully')
   @Post('refresh-token')
   @ApiBody({ type: RefreshTokenDto })

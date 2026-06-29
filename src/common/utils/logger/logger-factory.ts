@@ -31,7 +31,7 @@ export const LoggerFactory: LoggerModuleAsyncParams = {
       {
         path: LOGGER_DIR,
         maxFiles: 30,
-        interval: '1m',
+        interval: '1d',
         compress: 'gzip',
       },
     );

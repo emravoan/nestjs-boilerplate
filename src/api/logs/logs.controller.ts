@@ -15,7 +15,7 @@ export class LogsController {
    * Returns raw application log file text.
    */
   @Get()
-  getLog() {
+  async getLog() {
     return this.logsService.getLog();
   }
 
@@ -23,7 +23,7 @@ export class LogsController {
    * Clears application log file content.
    */
   @Delete()
-  clearLog(): void {
-    this.logsService.clearLog();
+  async clearLog() {
+    await this.logsService.clearLog();
   }
 }

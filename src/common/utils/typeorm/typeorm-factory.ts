@@ -13,7 +13,7 @@ function buildTypeOrmOptions(configService: ConfigService): TypeOrmModuleOptions
     password: configService.get<string>('database.password'),
     database: configService.get<string>('database.name'),
     autoLoadEntities: true,
-    synchronize: configService.get<string>('app.env') === 'development',
+    synchronize: false,
   };
 }
 

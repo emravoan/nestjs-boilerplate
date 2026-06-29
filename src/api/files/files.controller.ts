@@ -24,7 +24,7 @@ export class FilesController {
       /**
        * Rebuilds nested object path from Express wildcard param format.
        */
-      const filename = path.replace(',', '/');
+      const filename = path.replace(/,/g, '/');
       const ext = filename.split('.').pop()?.toLowerCase();
       const contentType = lookup(ext || '') || 'application/octet-stream';
 
@@ -47,7 +47,7 @@ export class FilesController {
    */
   @Delete(':type/*path')
   async deleteFile(@Param('type') type: FileTypeDto, @Param('path') path: string) {
-    const filename = path.replace(',', '/');
+    const filename = path.replace(/,/g, '/');
     await this.filesService.deleteFile(type, filename);
   }
 }

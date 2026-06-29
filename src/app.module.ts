@@ -12,12 +12,14 @@ import { LoggerFactory } from './common/utils/logger/logger-factory';
 import { ThrottlerFactory } from './common/utils/throttler/throttler-factory';
 import { TypeOrmFactory } from './common/utils/typeorm/typeorm-factory';
 import appConfig from './config/app.config';
+import { validateConfig } from './config/config.validation';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       load: [appConfig],
+      validate: validateConfig,
     }),
     LoggerModule.forRootAsync(LoggerFactory),
     TypeOrmModule.forRootAsync(TypeOrmFactory),
